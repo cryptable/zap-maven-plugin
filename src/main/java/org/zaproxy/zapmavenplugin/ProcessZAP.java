@@ -213,12 +213,14 @@ public class ProcessZAP extends AbstractMojo {
      * @return  all alerts from ZAProxy
      * @throws Exception
      */
-    private String getAllAlerts(boolean json) throws Exception {
+    private String getAllAlerts(String format) throws Exception {
         URL url;
         String result = "";
 
-        if (json) {
-            url = new URL("http://zap/json/core/view/alerts");
+        if (format.equalsIgnoreCase("xml") || 
+        	format.equalsIgnoreCase("html") ||
+        	format.equalsIgnoreCase("json")) {
+            url = new URL("http://zap/" + format + "/core/view/alerts");
         } else {
             url = new URL("http://zap/xml/core/view/alerts");
         }
@@ -239,6 +241,25 @@ public class ProcessZAP extends AbstractMojo {
         in.close();
         return result;
 
+    }
+    
+    /**
+     * Get all alerts from ZAP proxy
+     *
+     * @param json true for json form, false for xml format
+     * @return  all alerts from ZAProxy
+     * @throws Exception
+     */
+    private String getAllAlertsFormat(String format) throws Exception {
+
+    	if (format.equalsIgnoreCase("xml") || 
+        	format.equalsIgnoreCase("html") ||
+        	format.equalsIgnoreCase("json")) {
+            return format;
+        } else {
+            return "xml";
+        }
+    	
     }
 
     /**
@@ -273,7 +294,7 @@ public class ProcessZAP extends AbstractMojo {
 
                 fileName = createTempFilename("ZAP", "");
 
-                zapClientAPI.core.saveSession(fileName);
+                zapClientAPI.core.saveSession(fileName, "true");
             } else {
                 getLog().info("skip saveSession");
             }
@@ -287,17 +308,11 @@ public class ProcessZAP extends AbstractMojo {
                 String fileName_no_extension = FilenameUtils.concat(reportsDirectory, fileName);
 
                 try {
-                    String alerts = getAllAlerts(true);
-                    JSON jsonObj = JSONSerializer.toJSON(alerts);
-
-                    writeXml(fileName_no_extension, jsonObj);
-                    if (JSON_FORMAT.equals(format)) {
-                        writeJson(fileName_no_extension, jsonObj);
-                    } else if (NONE_FORMAT.equals(format)) {
-                        getLog().info("Only XML report will be generated");
-                    } else {
-                        getLog().info("This format is not supported ["+format+"] ; please choose 'none' or 'json'");
-                    }
+                    String alerts = getAllAlerts(getAllAlertsFormat(format));
+                    String fullFileName = fileName_no_extension + "." + getAllAlertsFormat(format);
+                    FileUtils.writeStringToFile(new File(fullFileName), alerts);
+                    
+                    getLog().info("File save in format in ["+getAllAlertsFormat(format)+"]");
                 } catch (Exception e) {
                     getLog().error(e.toString());
                     e.printStackTrace();
@@ -320,36 +335,6 @@ public class ProcessZAP extends AbstractMojo {
                 getLog().info("No shutdown of ZAP");
             }
         }
-    }
-
-    /**
-     * Converts the given JSON string into XML.
-     * 
-     * @param json
-     *            the JSON string to be converted
-     * @return XML representing the given JSON string
-     */
-    private String convert2XML(String json) {
-        // convert to XML
-        XMLSerializer serializer = new XMLSerializer();
-        serializer.setArrayName("zap-report");
-        serializer.setElementName("alerts");
-        JSON jsonObj = JSONSerializer.toJSON(json);
-        return serializer.write(jsonObj);
-    }
-
-    private void writeXml(String filename, JSON json) throws IOException {
-        String fullFileName = filename + ".xml";
-        XMLSerializer serializer = new XMLSerializer();
-        serializer.setArrayName("zap-report");
-        serializer.setElementName("alerts");
-        String xml = serializer.write(json);
-        FileUtils.writeStringToFile(new File(fullFileName), xml);
-    }
-
-    private void writeJson(String filename, JSON json) throws IOException {
-        String fullFileName = filename + ".json";
-        FileUtils.writeStringToFile(new File(fullFileName), json.toString());
     }
 
 }
