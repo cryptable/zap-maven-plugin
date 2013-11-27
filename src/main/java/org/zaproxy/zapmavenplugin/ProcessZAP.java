@@ -31,95 +31,82 @@ import net.sf.json.xml.XMLSerializer;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.zaproxy.clientapi.core.*;
 
 /**
  * Goal which touches a timestamp file.
- * 
- * @goal process-zap
- * @phase post-integration-test
  */
+@Mojo( name = "process-zap", 
+       defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, 
+       threadSafe = true )
 public class ProcessZAP extends AbstractMojo {
-    private static final String NONE_FORMAT = "none";
-
-    private static final String JSON_FORMAT = "json";
 
     private ClientApi zapClientAPI;
     private Proxy proxy;
 
     /**
      * Location of the host of the ZAP proxy
-     * 
-     * @parameter expression="${zapProxyHost}" default-value="localhost"
-     * @required
      */
+    @Parameter( defaultValue = "localhost", 
+    		    required = true)
     private String zapProxyHost;
 
     /**
      * Location of the port of the ZAP proxy
-     * 
-     * @parameter default-value="8080"
-     * @required
      */
+    @Parameter( defaultValue = "8080", 
+		        required = true)
     private int zapProxyPort;
 
     /**
      * Location of the port of the ZAP proxy
-     * 
-     * @parameter
-     * @required
      */
+    @Parameter( required=true )
     private String targetURL;
 
     /**
      * Switch to spider the URL
-     * 
-     * @parameter default-value="true"
      */
+    @Parameter( defaultValue="true" )
     private boolean spiderURL;
 
     /**
      * Switch to scan the URL
-     * 
-     * @parameter default-value="true"
      */
+    @Parameter( defaultValue="true" )
     private boolean scanURL;
 
     /**
      * Save session of scan
-     * 
-     * @parameter default-value="true"
      */
+    @Parameter( defaultValue="true" )
     private boolean saveSession;
 
     /**
      * Switch to shutdown ZAP
-     * 
-     * @parameter default-value="true"
      */
+    @Parameter( defaultValue="true" )
     private boolean shutdownZAP;
 
     /**
      * Save session of scan
-     * 
-     * @parameter expression="${reportAlerts}" default-value="true"
      */
+    @Parameter( defaultValue="true" )
     private boolean reportAlerts;
 
     /**
      * Location to store the ZAP reports
-     * 
-     * @parameter default-value="${project.build.directory}/zap-reports"
      */
+    @Parameter( defaultValue="${project.build.directory}/zap-reports" )
     private String reportsDirectory;
 
     /**
      * Set the output format type, in addition to the XML report. Must be one of "none" or "json".
-     * 
-     * @parameter default-value="none"
      */
+    @Parameter ( defaultValue="none" )
     private String format;
 
     /**

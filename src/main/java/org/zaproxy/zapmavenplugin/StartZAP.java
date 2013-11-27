@@ -21,49 +21,47 @@ import java.io.InputStreamReader;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.*;
+
 import org.zaproxy.clientapi.core.ClientApi;
 
 
 /**
- * Goal which touches a timestamp file.
- *
- * @goal start-zap
- * @phase pre-integration-test
+ * Goal which will start ZAP proxy.
  */
-public class StartZAP
-    extends AbstractMojo
+@Mojo( name = "start-zap",
+       defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST,
+       threadSafe = true )
+public class StartZAP extends AbstractMojo
 {
     /**
      * Location of the ZAProxy program.
-     * @parameter
-     * @required
      */
+	@Parameter( required=true )
     private String zapProgram;
     
     /**
      * Location of the host of the ZAP proxy
-     * @parameter default-value="localhost"
-     * @required
      */
+	@Parameter( defaultValue="localhost", required=true )
     private String zapProxyHost;
 
     /**
      * Location of the port of the ZAP proxy
-     * @parameter default-value="8080"
-     * @required
      */
+	@Parameter( defaultValue="8080", required=true )
     private int zapProxyPort;
 
     /**
      * New session when you don't want to start ZAProxy.
-     * @parameter default-value="false"
      */
+	@Parameter( defaultValue="false" )
     private boolean newSession;
 
     /**
      * Sleep to wait to start ZAProxy
-     * @parameter default-value="4000"
      */
+	@Parameter( defaultValue="4000" )
     private int zapSleep;
     
     public void execute()

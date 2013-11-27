@@ -1,44 +1,151 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.zaproxy.zapmavenplugin</groupId>
-  <artifactId>zap-maven-plugin</artifactId>
-  <packaging>maven-plugin</packaging>
-  <version>1.2-SNAPSHOT</version>
-  <name>zap-maven-plugin Maven Mojo</name>
-  <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.zaproxy</groupId>
-    	<artifactId>clientapi</artifactId>
-    	<version>2.2.0.1</version>
-    </dependency>
-    <dependency>
-    	<groupId>commons-io</groupId>
-    	<artifactId>commons-io</artifactId>
-    	<version>2.4</version>
-    </dependency>
-    <dependency>
-	    <groupId>net.sf.json-lib</groupId>
-		<artifactId>json-lib</artifactId>
-		<version>2.4</version>
-		<classifier>jdk15</classifier>
-	</dependency>
-	<dependency>
-	    <groupId>xom</groupId>
-        <artifactId>xom</artifactId>
-        <version>1.1</version>
-	</dependency>
-  </dependencies>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>mojo-parent</artifactId>
+		<version>30</version>
+	</parent>
+
+	<groupId>org.zaproxy.zapmavenplugin</groupId>
+	<artifactId>zap-maven-plugin</artifactId>
+	<version>1.2-SNAPSHOT</version>
+	<packaging>maven-plugin</packaging>
+
+	<name>zap-maven-plugin Maven Mojo</name>
+	<description>
+	This is a maven plugin to execute ZAProxy in the integration fase of the Maven lifecycle. 
+	ZAProxy will perform afterwards all security tests and create a report. This maven-plugin 
+	is used to integrate ZAProxy to perform security regression test. 
+	For ZAProxy (see http://code.google.com/p/zaproxy/.
+	This plugin can be used in your maven web project to integrate automatic regression tests 
+	using selenium and maven.  
+	</description>
+
+	<organization>
+		<name>Cryptable</name>
+		<url>http://www.cryptable.org</url>
+	</organization>
+
+	<url>https://code.google.com/p/zap-maven-plugin/</url>
+	<inceptionYear>2013</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>Apache 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<prerequisites>
+		<maven>${mavenVersion}</maven>
+	</prerequisites>
+
+	<developers>
+		<developer>
+			<id>ddt</id>
+			<name>David Tillemans</name>
+			<email>dtillemans@gmail.com</email>
+			<roles>
+				<role>Java Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://code.google.com/p/zap-maven-plugin/</connection>
+		<developerConnection>scm:git:https://code.google.com/p/zap-maven-plugin/</developerConnection>
+		<url>https://code.google.com/p/zap-maven-plugin/</url>
+	</scm>
+
+	<issueManagement>
+		<system>Goodle Code</system>
+		<url>https://code.google.com/p/zap-maven-plugin/issues</url>
+	</issueManagement>
+
+	<properties>
+		<mavenVersion>2.2.1</mavenVersion>
+		<doxiaVersion>1.4</doxiaVersion>
+		<sitePluginVersion>3.2</sitePluginVersion>
+		<mavenPluginVersion>3.2</mavenPluginVersion>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>${mavenVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.zaproxy</groupId>
+			<artifactId>clientapi</artifactId>
+			<version>2.4.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugin-tools</groupId>
+			<artifactId>maven-plugin-annotations</artifactId>
+			<version>3.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>xom</groupId>
+			<artifactId>xom</artifactId>
+			<version>1.1</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-plugin-plugin</artifactId>
+					<version>${mavenPluginVersion}</version>
+					<configuration>
+						<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>${mavenPluginVersion}</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
