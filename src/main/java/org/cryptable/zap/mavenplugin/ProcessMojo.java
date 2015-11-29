@@ -293,7 +293,7 @@ public class ProcessMojo extends AbstractMojo {
     /**
      * 
      * This method overwrites the super class implementation.
-     * @throws IOException 
+     * @throws IOException Throws exception when file access to property file failes
      */
     private void restoreProperties() throws IOException {
         Properties properties = new Properties();
@@ -321,9 +321,9 @@ public class ProcessMojo extends AbstractMojo {
     }
 
     /**
-     * execute the whole shabang
      *
-     * @throws MojoExecutionException
+     * Execute the whole shabang
+     * @throws MojoExecutionException Throws exception when ZAProxy fails
      */
     public void execute() throws MojoExecutionException {
     	System.setProperty("java.net.debug", "all");
