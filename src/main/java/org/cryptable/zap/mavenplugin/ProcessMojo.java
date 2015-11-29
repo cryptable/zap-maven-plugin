@@ -131,7 +131,13 @@ public class ProcessMojo extends AbstractMojo {
      */
     @Parameter( required = false )
     private String finalizeScript;
-    
+
+    /**
+     * A flag to create a jsonp JSON file. It assing the json body to zaproxy_jsonpData variable. Makes only sense when using json data.
+     */
+    @Parameter( defaultValue="false" )
+    private boolean jsonp;
+
     /**
      * create a Timestamp
      * 
@@ -375,7 +381,7 @@ public class ProcessMojo extends AbstractMojo {
                 try {
                     String alerts = getAllAlerts(getAllAlertsFormat(format));
                     String fullFileName = fileName_no_extension + "." + getAllAlertsFormat(format);
-                    FileUtils.writeStringToFile(new File(fullFileName), alerts);
+                    FileUtils.writeStringToFile(new File(fullFileName), (jsonp?"var zaproxy_jsonpData = ":"") + alerts);
                     getLog().info("File save in format in ["+getAllAlertsFormat(format)+"]");
                     if (format.equals("json")) {
                         Utils.copyResourcesRecursively(getClass().getResource("/zap-reports/"), new File(reportsDirectory));

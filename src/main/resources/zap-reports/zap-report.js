@@ -55,22 +55,30 @@ var ZAP = (function() {
 	var riskLow = 0, 
 		riskHigh = 0, 
 		riskMedium = 0;
-	var jsonData;
+	var jsonData = null;
 	var keys = [ 'id', 'risk', 'url', 'alert', 'fp' ];
     var sortingColumns = ['id', 'risk', 'url'];
     var filterFP = function(d) { if (d['fp'] === 'false') return d; };
     var filter = null;
     
     var loadTable = function(jsonFile, tableDiv, riskDiv, chartDiv) {
-        d3.json(jsonFile, function(error, jsonObject)  {
-//            if (error)
-//                return console.warn(error);
-            
-            jsonData = jsonObject.alerts;
+
+        // Retrieve JSON through an URL
+        if ((zaproxy_jsonpData === 'undefined') || (zaproxy_jsonpData === null)) {
+            d3.json(jsonFile, function (error, jsonObject) {
+                jsonData = jsonObject.alerts;
+                drawTable(jsonData, tableDiv);
+                buildStatistics(jsonData, riskDiv);
+                buildChart(chartDiv);
+            });
+        }
+        // jsonpData was define
+        else {
+            jsonData = zaproxy_jsonpData.alerts;
             drawTable(jsonData, tableDiv);
             buildStatistics(jsonData, riskDiv);
             buildChart(chartDiv);
-        });
+        }
     };
 
     // Model
