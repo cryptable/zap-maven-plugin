@@ -1,4 +1,4 @@
-package org.zaproxy.zapmavenplugin;
+package org.cryptable.zap.mavenplugin;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -36,7 +36,7 @@ import org.zaproxy.clientapi.core.ClientApi;
  */
 @SuppressWarnings("restriction")
 @Mojo(name = "start-zap", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, threadSafe = true)
-public class StartZAP extends AbstractMojo {
+public class StartMojo extends AbstractMojo {
     
     /**
      * Property file to update for proxy settings
@@ -61,6 +61,12 @@ public class StartZAP extends AbstractMojo {
      */
     @Parameter( required = true)
     private String apiKEY;
+    
+    /**
+     * Location of the ZAProxy program.
+     */
+    @Parameter(required = false)
+    private String preparationScript = null;
 
     /**
      * Location of the ZAProxy program.
@@ -148,7 +154,7 @@ public class StartZAP extends AbstractMojo {
                     public void run() {
                         try {
                             BufferedReader reader = new BufferedReader(new InputStreamReader(ps.getInputStream()));
-                            String line;
+                            String line = "";
                             try {
                                 while ((line = reader.readLine()) != null) {
                                     // Traitement du flux de sortie de l'application si besoin est
@@ -168,7 +174,7 @@ public class StartZAP extends AbstractMojo {
                     public void run() {
                         try {
                             BufferedReader reader = new BufferedReader(new InputStreamReader(ps.getErrorStream()));
-                            String line;
+                            String line = "";
                             try {
                                 while ((line = reader.readLine()) != null) {
                                     // Traitement du flux d'erreur de l'application si besoin est
