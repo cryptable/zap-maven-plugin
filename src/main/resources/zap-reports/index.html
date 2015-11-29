@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="zap-report.css">
+
+</head>
+<body>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script src="FileSaver.js" charset="utf-8"></script>
+	<script src="html-docx.js" charset="utf-8"></script> 
+	<script src="mustache.min.js" charset="utf-8"></script>
+	<script src="d3pie.min.js" charset="utf-8"></script>
+	<script src="zap-report.js" charset="utf-8"></script>
+    
+    <div id="PrintDiv">
+        <h1>Security Report</h1>
+        
+        <div id="AlertsStatistics">
+            <p><h2>Alerts statistics</h2></p>
+            <table>
+                <tr bgcolor="Red">
+                    <td>High Risk:</td>
+                    <td><div id="RiskHigh"></div></td>
+                </tr>
+                <tr bgcolor="Orange">
+                    <td>Medium Risk:</td>
+                    <td><div id="RiskMedium"></div></td>
+                </tr>
+                <tr bgcolor="Yellow">
+                    <td>Low Risk:</td>
+                    <td><div id="RiskLow"></div></td>
+                </tr>
+            </table>
+        </div>
+        <div id="AlertsChart"> 
+            <p><h2>Alerts chart</h2></p>
+            <div id="AlertsChart_ph"></div>
+        </div>
+        
+        <div id="dialog" title="ZAP Report"></div>
+        
+        <div id="AlertsTable">
+            <p><h2>Alerts table</h2></p>
+            <div id="AlertsTable_ph"></div>
+        </div>
+        
+        <div id="AppendReports"></div>
+    </div>
+    <input id="removeFP" type="submit" value="Toggle False Positives">
+    <input id="printFP" type="submit" value="Print Report">
+    <!-- <input id="saveAsDocx" type="submit" value="Save Report as Docx"> -->
+</body>
+</html>

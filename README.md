@@ -11,8 +11,8 @@ Insert following basic code into your maven project as a plugin:
 
 ~~~~~
 <plugin>
-    <groupId>org.owasp</groupId>
-    <artifactId>zap-maven-plugin</artifactId>
+    <groupId>org.cryptable.zap</groupId>
+    <artifactId>mavenplugin</artifactId>
     <version>2.0-SNAPSHOT</version>
     <configuration>
         <apiKey>ghnesdk0tejjsd6n7dhs9gdhskd</apiKey>

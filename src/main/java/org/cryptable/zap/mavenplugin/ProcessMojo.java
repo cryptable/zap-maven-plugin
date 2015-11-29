@@ -1,4 +1,4 @@
-package org.zaproxy.zapmavenplugin;
+package org.cryptable.zap.mavenplugin;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -15,7 +15,6 @@ package org.zaproxy.zapmavenplugin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +22,6 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Properties;
@@ -49,7 +47,7 @@ import org.zaproxy.clientapi.core.ClientApiException;
 @Mojo( name = "process-zap", 
        defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, 
        threadSafe = true )
-public class ProcessZAP extends AbstractMojo {
+public class ProcessMojo extends AbstractMojo {
 
     private ClientApi zapClientAPI;
     private Proxy proxy;
@@ -129,27 +127,15 @@ public class ProcessZAP extends AbstractMojo {
     private String format;
 
     /**
-     * Property file to update for proxy settings
+     * Location of the host of the ZAP proxy
      */
-    @Parameter(alias = "property.file", required = false)
-    private String propertyFile;
-
-    /**
-     * Proxy port setting in the property file
-     */
-    @Parameter(alias = "property.file.proxy.host", required = false)
-    private String propertyFileProxyHost;
-
-    /**
-     * Proxy host setting in the property file
-     */
-    @Parameter(alias = "property.file.proxy.port", required = false)
-    private String propertyFileProxyPort;
-
+    @Parameter( required = false )
+    private String finalizeScript;
+    
     /**
      * create a Timestamp
      * 
-     * @return returns a timestamp
+     * @return
      */
     private String dateTimeString() {
         Calendar cal = Calendar.getInstance();
@@ -164,7 +150,7 @@ public class ProcessZAP extends AbstractMojo {
      *            if null, then default "temp"
      * @param suffix
      *            if null, then default ".tmp"
-     * @return returns the temp filename
+     * @return
      */
     private String createTempFilename(String prefix, String suffix) {
         StringBuilder sb = new StringBuilder("");
@@ -188,7 +174,7 @@ public class ProcessZAP extends AbstractMojo {
      * Change the ZAP API status response to an integer
      *
      * @param response the ZAP APIresponse code
-     * @return returns a status as integer
+     * @return
      */
     private int statusToInt(ApiResponse response) {
         return Integer.parseInt(((ApiResponseElement)response).getValue());
@@ -201,7 +187,7 @@ public class ProcessZAP extends AbstractMojo {
      * @throws ClientApiException
      */
     private void spiderURL(String url) throws ClientApiException {
-        zapClientAPI.spider.scan(apiKEY, url, "10");
+        zapClientAPI.spider.scan(apiKEY, url, "10", "");
 
         while ( statusToInt(zapClientAPI.spider.status("scanid")) < 100) {
             try {
@@ -233,7 +219,7 @@ public class ProcessZAP extends AbstractMojo {
     /**
      * Get all alerts from ZAP proxy
      *
-     * @param format of the report
+     * @param format specification. It can be : 'xml', 'json', 'html'
      * @return  all alerts from ZAProxy
      * @throws Exception
      */
@@ -270,7 +256,7 @@ public class ProcessZAP extends AbstractMojo {
     /**
      * Get all alerts from ZAP proxy
      *
-     * @param format of the report
+     * @param format specification. It can be : 'xml', 'json', 'html'
      * @return  all alerts from ZAProxy
      * @throws Exception
      */
@@ -287,9 +273,27 @@ public class ProcessZAP extends AbstractMojo {
     }
 
     /**
+     * Property file to update for proxy settings
+     */
+    @Parameter(alias = "property.file", required = false)
+    private String propertyFile;
+    
+    /**
+     * Proxy port setting in the property file
+     */
+    @Parameter(alias = "property.file.proxy.host", required = false)
+    private String propertyFileProxyHost;
+    
+    /**
+     * Proxy host setting in the property file
+     */
+    @Parameter(alias = "property.file.proxy.port", required = false)
+    private String propertyFileProxyPort;
+    
+    /**
      * 
      * This method overwrites the super class implementation.
-     * @throws IOException 
+     * @throws IOException Throws exception when file access to property file failes
      */
     private void restoreProperties() throws IOException {
         Properties properties = new Properties();
@@ -317,9 +321,9 @@ public class ProcessZAP extends AbstractMojo {
     }
 
     /**
-     * execute the whole shabang
      *
-     * @throws MojoExecutionException
+     * Execute the whole shabang
+     * @throws MojoExecutionException Throws exception when ZAProxy fails
      */
     public void execute() throws MojoExecutionException {
     	System.setProperty("java.net.debug", "all");
@@ -358,7 +362,7 @@ public class ProcessZAP extends AbstractMojo {
 
                 // reuse fileName of the session file
                 if ((reportsFilenameNoExtension == null) || reportsFilenameNoExtension.isEmpty()) {
-                    if (fileName.isEmpty()) {
+                    if ((fileName == null) || (fileName.length() == 0)) {
                         fileName = createTempFilename("ZAP", "");
                     }                    
                 }
@@ -373,13 +377,16 @@ public class ProcessZAP extends AbstractMojo {
                     String fullFileName = fileName_no_extension + "." + getAllAlertsFormat(format);
                     FileUtils.writeStringToFile(new File(fullFileName), alerts);
                     getLog().info("File save in format in ["+getAllAlertsFormat(format)+"]");
+                    if (format.equals("json")) {
+                        Utils.copyResourcesRecursively(getClass().getResource("/zap-reports/"), new File(reportsDirectory));
+                    }
                 } catch (Exception e) {
                     getLog().error(e.toString());
                     e.printStackTrace();
                 }
             }
-            
-            if (!propertyFile.isEmpty()) {
+
+            if ((propertyFile != null) && !propertyFile.isEmpty()) {
                 restoreProperties();
             }
 
