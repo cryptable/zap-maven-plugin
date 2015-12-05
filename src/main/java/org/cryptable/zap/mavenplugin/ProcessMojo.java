@@ -34,10 +34,10 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.zaproxy.clientapi.core.ApiResponse;
-import org.zaproxy.clientapi.core.ApiResponseElement;
-import org.zaproxy.clientapi.core.ClientApi;
-import org.zaproxy.clientapi.core.ClientApiException;
+import org.cryptable.zaproxy.clientapi.core.ApiResponse;
+import org.cryptable.zaproxy.clientapi.core.ApiResponseElement;
+import org.cryptable.zaproxy.clientapi.core.ClientApi;
+import org.cryptable.zaproxy.clientapi.core.ClientApiException;
 
 
 /**

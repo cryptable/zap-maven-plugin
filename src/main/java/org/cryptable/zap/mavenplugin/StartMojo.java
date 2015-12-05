@@ -14,14 +14,9 @@ package org.cryptable.zap.mavenplugin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -29,7 +24,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.zaproxy.clientapi.core.ClientApi;
+import org.cryptable.zaproxy.clientapi.core.ClientApi;
 
 /**
  * Goal which will start ZAP proxy.
