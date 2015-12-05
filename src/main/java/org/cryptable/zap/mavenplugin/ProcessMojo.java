@@ -193,7 +193,7 @@ public class ProcessMojo extends AbstractMojo {
      * @throws ClientApiException
      */
     private void spiderURL(String url) throws ClientApiException {
-        zapClientAPI.spider.scan(apiKEY, url, "10", "");
+        zapClientAPI.spider.scan(apiKEY, url, "10", "", "");
 
         while ( statusToInt(zapClientAPI.spider.status("scanid")) < 100) {
             try {
