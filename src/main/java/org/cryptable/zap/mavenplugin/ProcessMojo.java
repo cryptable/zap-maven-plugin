@@ -193,8 +193,9 @@ public class ProcessMojo extends AbstractMojo {
      * @throws ClientApiException
      */
     private void spiderURL(String url) throws ClientApiException {
-        zapClientAPI.spider.scan(apiKEY, url, "10", "", "");
+        zapClientAPI.spider.scan(url, "10", "true", null, null);
 
+    	getLog().debug("Requesting status");
         while ( statusToInt(zapClientAPI.spider.status("scanid")) < 100) {
             try {
                 Thread.sleep(1000);
@@ -211,12 +212,14 @@ public class ProcessMojo extends AbstractMojo {
      * @throws ClientApiException
      */
     private void scanURL(String url) throws ClientApiException {
-        zapClientAPI.ascan.scan(apiKEY, url, "true", "false", "", "", "");
+        zapClientAPI.ascan.scan(url, "true", "false", "", "", "");
 
+    	getLog().debug("Requesting status");
         while ( statusToInt(zapClientAPI.ascan.status("scanid")) < 100) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+            	getLog().debug("InterruptedException");
                 getLog().error(e.toString());
             }
         }
@@ -230,13 +233,16 @@ public class ProcessMojo extends AbstractMojo {
      * @throws Exception
      */
     private String getAllAlerts(String format) throws Exception {
-        URL url;
+
         String result = "";
+        
+    	/*
+    	URL url;
 
         if (format.equalsIgnoreCase("xml") || 
         	format.equalsIgnoreCase("html") ||
         	format.equalsIgnoreCase("json")) {
-            url = new URL("http://zap/" + format + "/core/view/alerts");
+            url = new URL("http://zap/" + format.toUpperCase() + "/core/view/alerts");
         } else {
             url = new URL("http://zap/xml/core/view/alerts");
         }
@@ -255,7 +261,21 @@ public class ProcessMojo extends AbstractMojo {
         }
 
         in.close();
-        return result;
+    	 */
+    	
+        if (format.equalsIgnoreCase("html")) {
+        	return new String(zapClientAPI.core.htmlreport());        	
+        }
+
+        if (format.equalsIgnoreCase("json")) {
+        	return new String(zapClientAPI.core.jsonreport());        	
+        }
+
+        if (format.equalsIgnoreCase("markdown")) {
+        	return new String(zapClientAPI.core.mdreport());        	
+        }
+        
+        return new String(zapClientAPI.core.xmlreport());
 
     }
     
@@ -336,7 +356,7 @@ public class ProcessMojo extends AbstractMojo {
 
         try {
 
-            zapClientAPI = new ClientApi(zapProxyHost, zapProxyPort);
+            zapClientAPI = new ClientApi(zapProxyHost, zapProxyPort, apiKEY);
             proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(zapProxyHost, zapProxyPort));
 
             if (spiderURL) {
@@ -358,14 +378,17 @@ public class ProcessMojo extends AbstractMojo {
             if (saveSession) {
 
                 fileName = createTempFilename("ZAP", "");
-
-                zapClientAPI.core.saveSession(fileName, "true","");
+                getLog().info("Saving Session in [" + fileName + "]");
+                
+                zapClientAPI.core.saveSession(fileName, "true");
             } else {
                 getLog().info("skip saveSession");
             }
 
             if (reportAlerts) {
 
+                getLog().info("Generating the Report");
+                
                 // reuse fileName of the session file
                 if ((reportsFilenameNoExtension == null) || reportsFilenameNoExtension.isEmpty()) {
                     if ((fileName == null) || (fileName.length() == 0)) {
@@ -403,7 +426,7 @@ public class ProcessMojo extends AbstractMojo {
             if (shutdownZAP && (zapClientAPI != null)) {
                 try {
                     getLog().info("Shutdown ZAProxy");
-                    zapClientAPI.core.shutdown(apiKEY);
+                    zapClientAPI.core.shutdown();
                 } catch (Exception e) {
                     getLog().error(e.toString());
                     e.printStackTrace();
